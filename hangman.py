@@ -1,21 +1,26 @@
 # Problem Set 2, hangman.py
-# Name: 
-# Collaborators:
-# Time spent:
+# Name: Sdobnikov Valerii
+# Time spent: idk yet
 
-# Hangman Game
-# -----------------------------------
-# Helper code
-# You don't need to understand this helper code,
-# but you will have to know how to use the functions
-# (so be sure to read the docstrings!)
+DEBUG = True
+
+#region Helper Code
+
 import random
 import string
 
 WORDLIST_FILENAME = "words.txt"
 
+ART = r''' _   _   ___   _   _ _____ ___  ___  ___   _   _ 
+| | | | / _ \ | \ | |  __ \|  \/  | / _ \ | \ | |
+| |_| |/ /_\ \|  \| | |  \/| .  . |/ /_\ \|  \| |
+|  _  ||  _  || . ` | | __ | |\/| ||  _  || . ` |
+| | | || | | || |\  | |_\ \| |  | || | | || |\  |
+\_| |_/\_| |_/\_| \_/\____/\_|  |_/\_| |_/\_| \_/
+                                                 
+                                                 '''
 
-def load_words():
+def load_words() -> list:
     """
     Returns a list of valid words. Words are strings of lowercase letters.
     
@@ -34,7 +39,7 @@ def load_words():
 
 
 
-def choose_word(wordlist):
+def choose_word(wordlist: list) -> str:
     """
     wordlist (list): list of words (strings)
     
@@ -42,16 +47,12 @@ def choose_word(wordlist):
     """
     return random.choice(wordlist)
 
-# end of helper code
-
-# -----------------------------------
-
-# Load the list of words into the variable wordlist
-# so that it can be accessed from anywhere in the program
+#endregion
 wordlist = load_words()
 
 
-def is_word_guessed(secret_word, letters_guessed):
+def is_word_guessed(secret_word: str, letters_guessed: list) -> bool:
+    #region
     '''
     secret_word: string, the word the user is guessing; assumes all letters are
       lowercase
@@ -60,35 +61,47 @@ def is_word_guessed(secret_word, letters_guessed):
     returns: boolean, True if all the letters of secret_word are in letters_guessed;
       False otherwise
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    #endregion
+    return set(letters_guessed) == set([*secret_word])
 
 
 
-def get_guessed_word(secret_word, letters_guessed):
+def get_guessed_word(secret_word: str, letters_guessed: list) -> str:
+    #region
     '''
     secret_word: string, the word the user is guessing
     letters_guessed: list (of letters), which letters have been guessed so far
     returns: string, comprised of letters, underscores (_), and spaces that represents
       which letters in secret_word have been guessed so far.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    #endregion
+    
+    result = ''
+
+    for i in secret_word:
+        if i in letters_guessed:
+            result += i
+        else: result += '_'
+    return result
 
 
 
-def get_available_letters(letters_guessed):
+
+def get_available_letters(letters_guessed: list) -> str:
+    #region
     '''
     letters_guessed: list (of letters), which letters have been guessed so far
     returns: string (of letters), comprised of letters that represents which letters have not
       yet been guessed.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    #endregion
+
+    return ''.join([chr(i) for i in range(97,123) if chr(i) not in letters_guessed])
     
     
 
-def hangman(secret_word):
+def hangman(secret_word: str):
+    #region
     '''
     secret_word: string, the secret word to guess.
     
@@ -113,22 +126,47 @@ def hangman(secret_word):
     
     Follows the other limitations detailed in the problem write-up.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
-    pass
+    #endregion
+    print('\n\n' + ART + '\n\n')
 
+    if(DEBUG): print(f'secret word is: {secret_word}')
 
+    length = len(secret_word)
+    print(f'Secret word is {length} letters long.')
 
-# When you've completed your hangman function, scroll down to the bottom
-# of the file and uncomment the first two lines to test
-#(hint: you might want to pick your own
-# secret_word while you're doing your own testing)
+    guesses = 6
+    warnings = 3
+    guessed_letters = []
+    while guesses != 0:
+        print('*' * 30)
+        print(f'You have {guesses} guesses left and {3-warnings}/3 warnings.')
+        print(f'Available letters: ', end = '')
+        print(*list(get_available_letters(guessed_letters)), sep=',')
+        guess = ''
+        while True:
+            guess = input('Please guess a letter: ').replace(' ', '').lower()
+            if len(guess) != 1 or (not guess.isalpha()):
+                warnings -= 1
+                print(f'Entered data is not a letter! You now have {3-warnings}/3 warnings.')
+                continue
+            else:
+                break
 
+        if guess in [*secret_word]:
+            guessed_letters.append(guess)
+            print(f'Good guess: {get_guessed_word(secret_word, guessed_letters)}')
+        else:
+            print(f'Oops, you didn\'t guess: {get_guessed_word(secret_word, guessed_letters)}')
+        if is_word_guessed(secret_word, guessed_letters): break
+        guesses -= 1
 
-# -----------------------------------
+    if is_word_guessed(secret_word, guessed_letters):
+        print(f'{"*" * 30}\nCongratulations! You won!')
+    else:
+        print(f'{"*" * 30}\nMy condolences. You lost.')
 
-
-
-def match_with_gaps(my_word, other_word):
+def match_with_gaps(my_word: str, other_word: str) -> bool:
+    #region
     '''
     my_word: string with _ characters, current guess of secret word
     other_word: string, regular English word
@@ -137,12 +175,13 @@ def match_with_gaps(my_word, other_word):
         _ , and my_word and other_word are of the same length;
         False otherwise: 
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
+    #endregion
     pass
 
 
 
-def show_possible_matches(my_word):
+def show_possible_matches(my_word: str) -> None:
+    #region
     '''
     my_word: string with _ characters, current guess of secret word
     returns: nothing, but should print out every word in wordlist that matches my_word
@@ -152,12 +191,13 @@ def show_possible_matches(my_word):
              that has already been revealed.
 
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
+    #endregion
     pass
 
 
 
-def hangman_with_hints(secret_word):
+def hangman_with_hints(secret_word: str) -> None:
+    #region
     '''
     secret_word: string, the secret word to guess.
     
@@ -184,30 +224,15 @@ def hangman_with_hints(secret_word):
     
     Follows the other limitations detailed in the problem write-up.
     '''
-    # FILL IN YOUR CODE HERE AND DELETE "pass"
+    #endregion
     pass
 
 
-
-# When you've completed your hangman_with_hint function, comment the two similar
-# lines above that were used to run the hangman function, and then uncomment
-# these two lines and run this file to test!
-# Hint: You might want to pick your own secret_word while you're testing.
-
-
 if __name__ == "__main__":
-    # pass
 
-    # To test part 2, comment out the pass line above and
-    # uncomment the following two lines.
     
     secret_word = choose_word(wordlist)
     hangman(secret_word)
-
-###############
-    
-    # To test part 3 re-comment out the above lines and 
-    # uncomment the following two lines. 
     
     #secret_word = choose_word(wordlist)
     #hangman_with_hints(secret_word)
